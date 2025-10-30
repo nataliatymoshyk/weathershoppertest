@@ -1,6 +1,7 @@
 
 import {MoisturePage} from "./moisturesPage";
 import {SunscreenPage} from "./sunscreenPage";
+import {ShopFrame} from "./shopFrame";
 
 export class MainPage {
   readonly page;
@@ -20,31 +21,36 @@ export class MainPage {
     console.log('Temperature is ' + await temperature);
     return temperature;
   }
-  async buyProductsBasedOnTemperature(temperature,) {
+  async openCategoryPageBasedOnTemp(temperature,) {
     if (Number(temperature) < 19) {
-      console.log("temperature is below 19 degrees");
       await this.clickBuyMoisturizers();
-     // await moisturePage.isMoisturePageOpen();
+      let shopFrame = new ShopFrame(this.page);
+      await shopFrame.isCategoryOpen("Moisturizers");
+
     }
     if (Number(temperature) > 34) {
-      console.log("temperature is above 34 degrees");
       await this.clickBuySunscreens();
-    }
+      let shopFrame = new ShopFrame(this.page);
+      await shopFrame.isCategoryOpen("Sunscreens");
 
-    if (Number(temperature) >= 19 && Number(temperature) <= 34) {
-      //TODO add minus temperature check
-      console.log('Temperature is between 19 and 34 degrees, no action taken');
-    }
 
+      if (Number(temperature) >= 19 && Number(temperature) <= 34) {
+        console.log('Temperature is between 19 and 34 degrees, no action taken');
+      }
+
+      if (Number(temperature) < 0) {
+        console.log("It's freezing outside, buy a jacket!");
+      }
+    }
   }
 
   async clickBuyMoisturizers() {
     await this.page.getByRole('button', { name: 'Buy moisturizers' }).click();
-    return new MoisturePage(this.page);
+    return new ShopFrame(this.page);
   }
 
   async clickBuySunscreens() {
     await this.page.getByRole('button', { name: 'Buy sunscreens' }).click();
-    return new SunscreenPage(this.page);
+    return new ShopFrame(this.page);
   }
 }
